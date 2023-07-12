@@ -9,20 +9,15 @@
   export let data: PageData;
 
   let searchString = "";
-  $: selectedMons = data.mons.filter((mon: IndexMonster) => {
-    return mon.name.toLowerCase().includes(searchString.toLowerCase());
-  });
-
-  $: monId = $page.url.searchParams.get("monId") || "";
-  $: mon = data.mons.find((mon) => mon.id === monId);
-  $: monId2 = $page.url.searchParams.get("monId2") || "";
-  $: mon2 = data.mons.find((mon) => mon.id === monId2);
+  $: selectedMons = data.mons
+    .filter((mon: IndexMonster) =>
+      mon.name.toLowerCase().includes(searchString.toLowerCase())
+    )
+    .sort(
+      (a: IndexMonster, b: IndexMonster) => parseInt(a.id) - parseInt(b.id)
+    );
 
   $: selectedGenerationId = $page.url.searchParams.get("generation_id") || "";
-  // const monsterClick = (mon: IndexMonster) => {
-  //   monId = mon.id;
-  //   goto(`?monId=${monId}`);
-  // };
 
   const updateSearchParams = (key: string, value: string) => {
     const searchParams = new URLSearchParams($page.url.searchParams);
@@ -38,13 +33,6 @@
     searchString = form.searchString;
   };
 </script>
-
-{#if mon}
-  <Monster {mon} {updateSearchParams} />
-{/if}
-{#if mon2}
-  <Monster mon={mon2} {updateSearchParams} />
-{/if}
 
 <div class="generations">
   <button
@@ -76,7 +64,7 @@
 
 <div class="monsters">
   {#each selectedMons as mon (mon.id)}
-    <Monster {mon} {updateSearchParams} isInteractive={true} />
+    <Monster {mon} />
   {/each}
 </div>
 
